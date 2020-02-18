@@ -2,8 +2,11 @@ package com.algaworks.algafoodapi.api.controller;
 
 import java.util.List;
 
+import com.algaworks.algafoodapi.domain.exception.EntidadeEmUsoException;
+import com.algaworks.algafoodapi.domain.exception.EntidadeNaoEncontradaException;
 import com.algaworks.algafoodapi.domain.model.Cozinha;
 import com.algaworks.algafoodapi.domain.repository.CozinhaRepository;
+import com.algaworks.algafoodapi.domain.service.CadastroCozinhaService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -17,6 +20,9 @@ import javax.websocket.server.PathParam;
 @RestController
 @RequestMapping("/cozinhas")
 public class CozinhaController {
+
+	@Autowired
+	private CadastroCozinhaService cadastroCozinhaService;
 
 	@Autowired
 	private CozinhaRepository cozinhaRepository;
@@ -38,7 +44,7 @@ public class CozinhaController {
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseStatus(HttpStatus.CREATED)
 	public Cozinha adicionar(@RequestBody Cozinha cozinha) {
-		return cozinhaRepository.salvar(cozinha);
+		return cadastroCozinhaService.salvar(cozinha);
 	}
 
 	@PutMapping("/{cozinhaId}")
@@ -51,23 +57,19 @@ public class CozinhaController {
 
 //		cozinhaToUpdate.setNome(cozinha.getNome());
 		BeanUtils.copyProperties(cozinha, cozinhaToUpdate, "id");
-		cozinhaRepository.salvar(cozinhaToUpdate);
+		cadastroCozinhaService.salvar(cozinhaToUpdate);
 		return ResponseEntity.ok(cozinhaToUpdate);
 	}
 
 	@DeleteMapping("/{cozinhaId}")
 	public ResponseEntity<Cozinha> excluir(@PathVariable Long cozinhaId) {
 		try {
-			Cozinha cozinha = cozinhaRepository.buscar(cozinhaId);
-
-			if (cozinha == null ) {
-				return ResponseEntity.notFound().build();
-			}
-
-			cozinhaRepository.remover(cozinha);
+			cadastroCozinhaService.excluir(cozinhaId);
 			return ResponseEntity.noContent().build();
-		} catch (DataIntegrityViolationException e) {
+		} catch (EntidadeEmUsoException e) {
 			return ResponseEntity.status(HttpStatus.CONFLICT).build();
+		} catch (EntidadeNaoEncontradaException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
 
 	}
