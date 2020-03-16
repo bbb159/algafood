@@ -1,7 +1,6 @@
 package com.algaworks.algafoodapi.api.controller;
 
 import com.algaworks.algafoodapi.domain.exception.EntidadeNaoEncontradaException;
-import com.algaworks.algafoodapi.domain.model.Cozinha;
 import com.algaworks.algafoodapi.domain.model.Restaurante;
 import com.algaworks.algafoodapi.domain.repository.RestauranteRepository;
 import com.algaworks.algafoodapi.domain.service.CadastroRestauranteService;
@@ -61,7 +60,7 @@ public class RestauranteController {
             if (restauranteToUpdate.isEmpty()) {
                 return ResponseEntity.notFound().build();
             }
-            BeanUtils.copyProperties(restaurante, restauranteToUpdate.get(), "id");
+            BeanUtils.copyProperties(restaurante, restauranteToUpdate.get(), "id", "formasPagamento", "endereco", "dataCadastro");
             cadastroRestauranteService.salvar(restauranteToUpdate.get());
             return ResponseEntity.ok(restauranteToUpdate.get());
         } catch (EntidadeNaoEncontradaException e) {
