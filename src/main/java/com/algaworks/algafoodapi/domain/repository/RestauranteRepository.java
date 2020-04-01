@@ -28,4 +28,7 @@ public interface RestauranteRepository extends CustomJpaRepository<Restaurante, 
 
     int countByCozinhaId(Long cozinha);
 
+    @Query("from Restaurante r join r.cozinha left join fetch r.formasPagamento")
+    List<Restaurante> findAll();
+
 }
