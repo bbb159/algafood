@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class CadastroCidadeService {
 
+    public static final String MSG_CIDADE_NAO_ENCONTRADA = "Não existe uma cidade com esse ID";
+
     @Autowired
     private CidadeRepository cidadeRepository;
 
@@ -21,8 +23,12 @@ public class CadastroCidadeService {
         try {
             cidadeRepository.deleteById(cidadeId);
         } catch (EmptyResultDataAccessException e) {
-            throw new EntidadeNaoEncontradaException("Não existe uma cidade com esse ID");
+            throw new EntidadeNaoEncontradaException(MSG_CIDADE_NAO_ENCONTRADA);
         }
+    }
+
+    public Cidade buscarOuFalhar(Long cidadeId) {
+        return cidadeRepository.findById(cidadeId).orElseThrow(() -> new EntidadeNaoEncontradaException(MSG_CIDADE_NAO_ENCONTRADA));
     }
 
 }
