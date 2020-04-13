@@ -2,6 +2,7 @@ package com.algaworks.algafoodapi.domain.service;
 
 import com.algaworks.algafoodapi.domain.exception.EntidadeNaoEncontradaException;
 import com.algaworks.algafoodapi.domain.model.Cidade;
+import com.algaworks.algafoodapi.domain.model.Estado;
 import com.algaworks.algafoodapi.domain.repository.CidadeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -15,7 +16,15 @@ public class CadastroCidadeService {
     @Autowired
     private CidadeRepository cidadeRepository;
 
+    @Autowired
+    private CadastroEstadoService cadastroEstadoService;
+
     public Cidade salvar(Cidade cidade) {
+
+        Long estadoId = cidade.getEstado().getId();
+        Estado estado = cadastroEstadoService.buscarOuFalhar(estadoId);
+
+        cidade.setEstado(estado);
         return cidadeRepository.save(cidade);
     }
 
